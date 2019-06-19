@@ -1,0 +1,58 @@
+---
+title: "Performance of Value Stocks"
+author: "Karl Polen"
+date: "June 19, 2019"
+output: 
+  html_document:
+    keep_md: TRUE
+---
+
+```{r setup, echo=FALSE}
+
+Sys.setenv(JAVA_HOME='')
+library(Rblpapi)
+library(tidyverse)
+library(ggplot2)
+conn=blpConnect()
+index="MXUSLC Index"
+lc=bds(index,"INDX_MEMBERS",con=conn)
+lc=paste(lc[,1],"Equity")
+flds=c("PE_RATIO","LAST_CLOSE_TRR_1YR")
+lcvals=bdp(lc,flds,con=conn)
+index="MXUSMC Index"
+mc=bds(index,"INDX_MEMBERS",con=conn)
+mc=paste(mc[,1],"Equity")
+flds=c("PE_RATIO","LAST_CLOSE_TRR_1YR")
+mcvals=bdp(mc,flds,con=conn)
+index="MXUSSC Index"
+sc=bds(index,"INDX_MEMBERS",con=conn)
+sc=paste(sc[,1],"Equity")
+flds=c("PE_RATIO","LAST_CLOSE_TRR_1YR")
+scvals=bdp(sc,flds,con=conn)
+x=blpDisconnect(conn)
+scvals[is.na(scvals[,1]),1]=100
+scvals[scvals[,1]>100,1]=100
+scvals=scvals[!is.na(scvals[,2]),]
+scvals$Price_Earnings=cut(scvals$PE_RATIO,c(-1,10,20,50,Inf),
+                          c("PE<10","10<PE<20","20<PE<50","PE>50"))
+#ggplot(scvals,aes(x=PE_RATIO,y=LAST_CLOSE_TRR_1YR))+geom_point()+geom_smooth()
+mcvals[is.na(mcvals[,1]),1]=100
+mcvals[mcvals[,1]>100,1]=100
+mcvals=mcvals[!is.na(mcvals[,2]),]
+mcvals$Price_Earnings=cut(mcvals$PE_RATIO,c(-1,10,20,50,Inf),
+                          c("PE<10","10<PE<20","20<PE<50","PE>50"))
+#ggplot(mcvals,aes(x=PE_RATIO,y=LAST_CLOSE_TRR_1YR))+geom_point()+geom_smooth()
+lcvals[is.na(lcvals[,1]),1]=100
+lcvals[lcvals[,1]>100,1]=100
+lcvals=lcvals[!is.na(lcvals[,2]),]
+lcvals$Price_Earnings=cut(lcvals$PE_RATIO,c(-1,10,20,50,Inf),
+                          c("PE<10","10<PE<20","20<PE<50","PE>50"))
+#ggplot(lcvals,aes(x=PE_RATIO,y=LAST_CLOSE_TRR_1YR))+geom_point()+geom_smooth()
+ggplot(lcvals,aes(x=Price_Earnings,y=LAST_CLOSE_TRR_1YR))+geom_boxplot()+
+  ylab("Last 12 Mos Return")+ggtitle("Large Cap Stocks")
+ggplot(mcvals,aes(x=Price_Earnings,y=LAST_CLOSE_TRR_1YR))+geom_boxplot()+
+  ylab("Last 12 Mos Return")+ggtitle("Mid Cap Stocks")
+ggplot(scvals,aes(x=Price_Earnings,y=LAST_CLOSE_TRR_1YR))+geom_boxplot()+
+  ylab("Last 12 Mos Return")+ggtitle("Small Cap Stocks")
+```
+
