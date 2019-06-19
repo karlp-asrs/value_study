@@ -1,5 +1,5 @@
 ---
-title: "Performance of Value Stocks"
+title: "Performance and PE Ratio"
 author: "Karl Polen"
 date: "June 19, 2019"
 output: 
@@ -7,7 +7,7 @@ output:
     keep_md: TRUE
 ---
 
-```{r setup, echo=FALSE}
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
 
 Sys.setenv(JAVA_HOME='')
 library(Rblpapi)
